@@ -21,7 +21,18 @@ public class UserDb {
         users.add(new User("provider@provider.com","provider",Role.PROVIDER));
      
     }
-
+    /** 
+     * ???????????????????????????????????????????? 
+     */
+    // TO BE DTELETED when UserDBidentification is developed
+    public static UserDb getInstance(){
+        if (_instance == null) {
+            _instance = new UserDb();
+        }
+        return _instance;
+    }
+   /*********************************************************/
+    
     public static UserDb getInstance(String dbUser, String dbPass) {
         if (!_dbUser.equals(dbUser) || !_dbPass.equals(dbPass)) {
             return null;

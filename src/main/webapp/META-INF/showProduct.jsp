@@ -7,6 +7,10 @@
         <title>Distributeur 2.0</title>
     </head>
     <body>
+        <c:if test="${sessionScope.user != null}">
+            <h4> email compte: <c:out value="${sessionScope.user.getEmail()}"/> </h4>
+        </c:if>
+        
         <table>
             <caption>Liste des produits</caption>
             
@@ -29,6 +33,15 @@
             
         </table>
         <hr />
-        <a href="/webdistributeur/customer/BuyProductServlet">Se Connecter </a>
+        
+        <c:if test="${sessionScope.user != null}">
+            <a href="/webdistributeur/customer/BuyProductServlet">Acheter </a>
+        </c:if>
+            
+        <c:if test="${sessionScope.user == null }">
+            <a href="/webdistributeur/LoginServlet">Se Connecter </a>
+        </c:if>
+        <!-- <a href="/webdistributeur/customer/BuyProductServlet">Se Connecter </a> -->
+        <!--<a href="/webdistributeur/customer/LoginServlet">Se Connecter </a> -->
     </body>
 </html>

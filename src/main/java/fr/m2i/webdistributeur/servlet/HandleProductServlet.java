@@ -1,5 +1,7 @@
 package fr.m2i.webdistributeur.servlet;
 
+import fr.m2i.webdistributeur.Distributor;
+import fr.m2i.webdistributeur.Product;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -20,7 +22,14 @@ public class HandleProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        setStockAttribute(request);
+        
         this.getServletContext().getRequestDispatcher("/META-INF/provider/handleProduct.jsp").forward(request, response);
+    }
+    
+    private void setStockAttribute(HttpServletRequest request) {
+        Distributor distributeur = Distributor.getInstance();
+        request.setAttribute("stock", distributeur.getStock());
     }
 
     /**
@@ -34,8 +43,55 @@ public class HandleProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        super.doPost(request, response);
+        //super.doPost(request, response);
+        Distributor distributeur = Distributor.getInstance();
+        String deleteRequest = request.getParameter("supp");
+        String modifRequest = request.getParameter("modif");
+
+        if (deleteRequest != null || modifRequest != null) {
+            Product product = checkProduct(request);
+            if(product != null){
+                if(deleteRequest != null){
+                    distributeur.removeProduct(product.getId());
+                    request.setAttribute("stock", distributeur.getStock());
+                    this.getServletContext().getRequestDispatcher("/META-INF/provider/handleProduct.jsp").forward(request, response);
+                }
+                if(modifRequest != null){
+                    request.setAttribute("product", product);
+                    this.getServletContext().getRequestDispatcher("/META-INF/provider/updateProduct.jsp").forward(request, response);
+                    //response.sendRedirect("provider/UpdateProductServlet");
+                }
+            }
+        }
+
     }
+    
+    private Product checkProduct(HttpServletRequest request){
+        
+        String productId = request.getParameter("idProduct");
+
+        if (productId == null || "".equals(productId)) {
+            return null;
+        }
+        
+        Distributor distributeur = Distributor.getInstance();
+
+        try {
+            int id = Integer.parseInt(productId);
+            Product product = distributeur.getProduit(id);
+            if ( product == null) {
+                request.setAttribute("productError", "Le produit demandé n'existe pas");
+            }
+            return product;
+
+        } catch(Exception e) {
+            request.setAttribute("productError", "Une erreur est survenue lors de l'achat");
+            return null;
+        }
+    }
+    
+    
+    
 
     /**
      * Returns a short description of the servlet.

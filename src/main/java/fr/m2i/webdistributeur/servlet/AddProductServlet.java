@@ -1,5 +1,7 @@
 package fr.m2i.webdistributeur.servlet;
 
+import fr.m2i.webdistributeur.Distributor;
+import fr.m2i.webdistributeur.Product;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -34,7 +36,51 @@ public class AddProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        super.doPost(request, response);
+        //super.doPost(request, response);
+        addProduct(request);
+        response.setHeader("Refresh", "5; URL=HandleProductServlet");
+    
+            this.getServletContext().getRequestDispatcher("/META-INF/provider/addProduct.jsp").forward(request, response);
+           // response.sendRedirect("HandleProductServlet");
+    }
+    
+    private void addProduct(HttpServletRequest request) {
+
+         Distributor distributeur = Distributor.getInstance();
+        String productId = request.getParameter("idProduct");
+
+        if (productId == null || "".equals(productId)) {
+            return;
+        }
+        
+
+        try {
+            int id = Integer.parseInt(productId);
+            
+            if (distributeur.getProduit(id) != null) {
+                request.setAttribute("addError", "L'idetifiant du produit existe déja");
+                return;
+            }
+            
+            String name = request.getParameter("nameProduct");
+            if((name == null) || ("".equals(name))){
+                request.setAttribute("addError", "Le nom ne doit pas etre null");
+                return;
+            }
+        
+            String price = request.getParameter("priceProduct");
+            int prix = Integer.parseInt(price);
+            String quantity = request.getParameter("qteProduct");
+            int quantite = Integer.parseInt(quantity);
+            
+            Product product = new Product(id,name,prix,quantite );  
+            distributeur.addProduct(product);
+            request.setAttribute("addMessage", "le produit a été bien ajouté ");
+            
+        } catch(Exception e) {
+            request.setAttribute("addError", "Une erreur est survenue lors de l'ajout");
+        }
+        
     }
 
     /**

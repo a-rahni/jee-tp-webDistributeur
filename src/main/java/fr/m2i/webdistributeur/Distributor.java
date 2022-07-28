@@ -80,4 +80,26 @@ public class Distributor {
         return null;
     }
     
+    public void addProduct(Product product) {
+        stock.add(product);
+    }
+    
+    public void removeProduct(int id) {
+        for (int i=0;i<stock.size();i++) {
+           if (stock.get(i).getId()== id){
+               stock.remove(i);
+           }
+        }
+    }
+    
+    public void updateProduct(Product product) {
+        for (int i=0;i<stock.size();i++) {
+           if (stock.get(i).getId()== product.getId()){
+               stock.get(i).setName(product.getName());
+               stock.get(i).setPrice(product.getPrice());
+               stock.get(i).setQuantity(product.getQuantity());
+           }
+        }
+    }
+    
 }

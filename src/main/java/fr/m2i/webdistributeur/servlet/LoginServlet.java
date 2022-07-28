@@ -1,11 +1,15 @@
 package fr.m2i.webdistributeur.servlet;
 
+import fr.m2i.webdistributeur.entity.Role;
+import fr.m2i.webdistributeur.entity.User;
+import fr.m2i.webdistributeur.utils.UserDb;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 public class LoginServlet extends HttpServlet {
 
@@ -34,7 +38,43 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        super.doPost(request, response);
+        //super.doPost(request, response);
+         // On récupère notre userDb depuis les attributs du servlet context (créé dans le LifecycleListener)
+        //UserDb userDb = (UserDb) this.getServletContext().getAttribute("userDb");
+
+        // On récupère les paramètres du formulaire
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+
+        // On vérifie dans notre base de donnée qu'un user existe avec les identifiants envoyés
+        //User user = userDb.checkUser(email, password);
+        User user = UserDb.getInstance().checkUser(email, password);
+
+        // Si le user est null, les identifiants sont invalides
+        // On set le message d'erreur et on affiche la page de login
+        if (user == null) {
+            request.setAttribute("error", "Veuillez vérifier vos identifiants !");
+            this.getServletContext().getRequestDispatcher("/META-INF/login.jsp").forward(request, response);
+            return; // on arrête la méthode ici
+        }
+
+        // Si on arrive ici c'est que le user est différent de null -> on la trouver dans notre base de donnée
+        
+        // On créer une nouvelle session avec le paramètre true
+        HttpSession session = request.getSession(true);
+        // On stock le user connecter dans la session
+        session.setAttribute("user", user);
+
+        // On redirige vers la page d'accueil
+        if(user.getRole() == Role.USER){
+            response.sendRedirect("ShowProductServlet");
+        }else if(user.getRole() == Role.PROVIDER){
+            response.sendRedirect("provider/HandleProductServlet");
+            //response.sendRedirect("AddProductServlet");
+        }else if(user.getRole() == Role.ADMIN){
+            response.sendRedirect("admin/HandleUserServlet");
+        }
+        
     }
 
     /**

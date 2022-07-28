@@ -1,5 +1,6 @@
 package fr.m2i.webdistributeur.servlet;
 
+import fr.m2i.webdistributeur.Distributor;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -20,6 +21,8 @@ public class BuyProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        setDistributorAttribute(request);
         this.getServletContext().getRequestDispatcher("/META-INF/customer/buyProduct.jsp").forward(request, response);
     }
 
@@ -34,8 +37,76 @@ public class BuyProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        super.doPost(request, response);
+        //super.doPost(request, response);
+         addCredit(request);
+        buyProduct(request);
+        setDistributorAttribute(request);
+
+        this.getServletContext().getRequestDispatcher("/META-INF/customer/buyProduct.jsp").forward(request, response);
     }
+    
+    
+     private void setDistributorAttribute(HttpServletRequest request) {
+         Distributor distributeur = Distributor.getInstance();
+        request.setAttribute("credit", distributeur.getCredit());
+        request.setAttribute("stock", distributeur.getStock());
+    }
+    
+     private void addCredit(HttpServletRequest request) {
+        Distributor distributeur = Distributor.getInstance();
+        String credit = request.getParameter("credit");
+
+        if (credit == null) {
+            return;
+        }
+
+        try {
+            int amount = Integer.parseInt(credit);
+
+            if (amount < 0) {
+                request.setAttribute("creditError", "Vous ne pouvez pas ajouter un montant négatif");
+                return;
+            }
+
+            distributeur.insererArgent(amount);
+            // distributeur.setCredit(distributeur.getCredit() + Integer.parseInt(amount));
+            request.setAttribute("creditError", null);
+        } catch (Exception e) {
+            request.setAttribute("creditError", "Une erreur est survenue lors de l'ajout du crédit");
+        }
+    }
+     
+      private void buyProduct(HttpServletRequest request) {
+        Distributor distributeur = Distributor.getInstance();
+        String productId = request.getParameter("productId");
+
+        if (productId == null || "".equals(productId)) {
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(productId);
+            
+            if (distributeur.getProduit(id) == null) {
+                request.setAttribute("productError", "Le produit demandé n'existe pas");
+                return;
+            }
+            
+            if (!distributeur.creditSuffisant(id)) {
+                request.setAttribute("insufficientError", "Votre crédit est insuffisant");
+                return;
+            }
+
+            if (!distributeur.stockSuffisant(id)) {
+                request.setAttribute("productError", "Le produit n'est plus en stock");
+                return;
+            }
+
+            distributeur.commanderProduit(id);
+        } catch(Exception e) {
+            request.setAttribute("productError", "Une erreur est survenue lors de l'achat");
+        }
+      }
 
     /**
      * Returns a short description of the servlet.

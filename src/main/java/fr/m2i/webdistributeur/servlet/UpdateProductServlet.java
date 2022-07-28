@@ -1,5 +1,7 @@
 package fr.m2i.webdistributeur.servlet;
 
+import fr.m2i.webdistributeur.Distributor;
+import fr.m2i.webdistributeur.Product;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -34,7 +36,55 @@ public class UpdateProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        super.doPost(request, response);
+        //super.doPost(request, response);
+
+        if (request.getParameter("valider") != null ) { 
+            updateProduct(request);
+            response.setHeader("Refresh", "5; URL=HandleProductServlet");
+    
+            this.getServletContext().getRequestDispatcher("/META-INF/provider/updateProduct.jsp").forward(request, response);
+            //response.sendRedirect("HandleProductServlet");
+                   
+        }
+    }
+    
+     private void updateProduct(HttpServletRequest request) {
+
+         Distributor distributeur = Distributor.getInstance();
+        String productId = request.getParameter("idProduct");
+
+        if (productId == null || "".equals(productId)) {
+            return;
+        }
+        
+
+        try {
+            int id = Integer.parseInt(productId);
+            
+            if (distributeur.getProduit(id) == null) {
+                request.setAttribute("updateError", "Le produit a modifier n'existe pas");
+                return;
+            }
+            
+            String name = request.getParameter("nameProduct");
+            if("".equals(name)){
+                request.setAttribute("updateError", "Le produit a modifier n'existe pas");
+                return;
+            }
+        
+            String price = request.getParameter("priceProduct");
+            int prix = Integer.parseInt(price);
+            String quantity = request.getParameter("qteProduct");
+            int quantite = Integer.parseInt(quantity);
+            
+            Product product = new Product(id,name,prix,quantite );  
+            distributeur.updateProduct(product);
+            request.setAttribute("updateMessage", "le produit a été bien modifié ");
+            
+        } catch(Exception e) {
+            request.setAttribute("updateError", "Une erreur est survenue lors de l'achat");
+        }
+        
     }
 
     /**
