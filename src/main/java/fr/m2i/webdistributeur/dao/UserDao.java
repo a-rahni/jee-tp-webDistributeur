@@ -20,19 +20,30 @@ public class UserDao {
     }
 
     public User findById(int id) {
+        for(User u:userDb.getUsers()){
+            if(u.getId() == id){
+                return u;
+            }
+        }
         return null;
     }
 
+    // doit retourner une list ??  plusieur user peuvent avoir le même role!!!
     public User findByRole(Role role) {
+        for(User u:userDb.getUsers()){
+            if(u.getRole().equals(role)){
+                return u;
+            }
+        }
         return null;
     }
 
     public User create(User user) {
-        return user;
+        return userDb.addUser(user);
     }
 
     public User update(User user) {
-        return null;
+        return userDb.updateUser(user);
     }
 
     public boolean delete(User user) {
