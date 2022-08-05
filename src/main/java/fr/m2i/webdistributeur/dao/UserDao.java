@@ -27,6 +27,15 @@ public class UserDao {
         }
         return null;
     }
+    
+    public User findByEmail(String email){
+        for(User u:userDb.getUsers()){
+            if(u.getEmail().equals(email)){
+                return u;
+            }
+        }
+        return null;
+    }
 
     // doit retourner une list ??  plusieur user peuvent avoir le même role!!!
     public User findByRole(Role role) {

@@ -50,7 +50,13 @@ public class UpdateProductServlet extends HttpServlet {
     
      private void updateProduct(HttpServletRequest request) {
 
-         Distributor distributeur = Distributor.getInstance();
+         //Distributor distributeur = Distributor.getInstance();
+         Distributor distributeur = (Distributor)this.getServletContext().getAttribute("distributeur");
+        if(distributeur == null){
+            request.setAttribute("updateError", "data not availables, update can not be done");
+            return;
+        }
+
         String productId = request.getParameter("idProduct");
 
         if (productId == null || "".equals(productId)) {

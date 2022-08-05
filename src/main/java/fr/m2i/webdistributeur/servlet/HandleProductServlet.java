@@ -44,7 +44,13 @@ public class HandleProductServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //super.doPost(request, response);
-        Distributor distributeur = Distributor.getInstance();
+        //Distributor distributeur = Distributor.getInstance();
+        Distributor distributeur = (Distributor)this.getServletContext().getAttribute("distributeur");
+        if(distributeur == null){
+            request.setAttribute("error", "data not availables");
+            // add error dispaly in jsp page ..: to do
+            return;
+        }
         String deleteRequest = request.getParameter("supp");
         String modifRequest = request.getParameter("modif");
 
@@ -74,7 +80,13 @@ public class HandleProductServlet extends HttpServlet {
             return null;
         }
         
-        Distributor distributeur = Distributor.getInstance();
+        //Distributor distributeur = Distributor.getInstance();
+        Distributor distributeur = (Distributor)this.getServletContext().getAttribute("distributeur");
+        if(distributeur == null){
+            request.setAttribute("error", "data not availables");
+            // add error dispaly in jsp page ..: to do
+            return null;
+        }
 
         try {
             int id = Integer.parseInt(productId);

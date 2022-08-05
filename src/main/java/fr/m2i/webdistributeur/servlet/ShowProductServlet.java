@@ -21,8 +21,14 @@ public class ShowProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        Distributor distributeur = Distributor.getInstance();
-        request.setAttribute("stock", distributeur.getStock());
+        //Distributor distributeur = Distributor.getInstance();
+        Distributor distributeur = (Distributor)this.getServletContext().getAttribute("distributeur");
+        if(distributeur == null){
+            request.setAttribute("error", "données distributeur non disponibles");
+        }
+        else{
+            request.setAttribute("stock", distributeur.getStock());
+        }
         this.getServletContext().getRequestDispatcher("/META-INF/showProduct.jsp").forward(request, response);
     }
 
