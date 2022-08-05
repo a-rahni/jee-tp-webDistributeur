@@ -35,6 +35,7 @@ public class UserDb {
     
     public static UserDb getInstance(String dbUser, String dbPass) {
         if (!_dbUser.equals(dbUser) || !_dbPass.equals(dbPass)) {
+            System.out.println("Les identifiants pour accéder à la base de données sont erronés");
             return null;
         }
 
@@ -62,5 +63,37 @@ public class UserDb {
         }
 
         return null;
+    }
+    
+    public User addUser(User user){
+        try{
+        users.add(user);
+        return users.get(users.size()-1);
+        }catch(Exception e){
+            return null;
+        }
+    }
+    
+    public User updateUser(User user){
+        for(User u:users){
+            if(u.getId() == user.getId()){
+                u.setPassword(user.getPassword());
+                u.setEmail(user.getEmail());
+                u.setRole(user.getRole());
+                u.setCredit(user.getCredit());
+                return u;
+            }            
+        }
+        return null;
+    }
+    
+    public boolean deleteUser(User user){
+        for(int i = 0; i<users.size();i++){
+            if(users.get(i).getId() == user.getId()){
+                users.remove(i);
+                return true;
+            }            
+        }
+        return false;
     }
 }
