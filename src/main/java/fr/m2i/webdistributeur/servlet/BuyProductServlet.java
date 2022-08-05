@@ -47,13 +47,25 @@ public class BuyProductServlet extends HttpServlet {
     
     
      private void setDistributorAttribute(HttpServletRequest request) {
-         Distributor distributeur = Distributor.getInstance();
+         //Distributor distributeur = Distributor.getInstance();
+         Distributor distributeur = (Distributor)this.getServletContext().getAttribute("distributeur");
+        if(distributeur == null){
+            request.setAttribute("error", "data not availables");
+            // add error dispaly in jsp page ..: to do
+            return;
+        }
         request.setAttribute("credit", distributeur.getCredit());
         request.setAttribute("stock", distributeur.getStock());
     }
     
      private void addCredit(HttpServletRequest request) {
-        Distributor distributeur = Distributor.getInstance();
+        //Distributor distributeur = Distributor.getInstance();
+        Distributor distributeur = (Distributor)this.getServletContext().getAttribute("distributeur");
+        if(distributeur == null){
+            request.setAttribute("error", "data not availables");
+            // add error dispaly in jsp page ..: to do
+            return;
+        }
         String credit = request.getParameter("credit");
 
         if (credit == null) {
@@ -77,7 +89,14 @@ public class BuyProductServlet extends HttpServlet {
     }
      
       private void buyProduct(HttpServletRequest request) {
-        Distributor distributeur = Distributor.getInstance();
+        //Distributor distributeur = Distributor.getInstance();
+        Distributor distributeur = (Distributor)this.getServletContext().getAttribute("distributeur");
+        if(distributeur == null){
+            request.setAttribute("error", "data not availables");
+            // add error dispaly in jsp page ..: to do
+            return;
+        }
+        
         String productId = request.getParameter("productId");
 
         if (productId == null || "".equals(productId)) {

@@ -46,7 +46,13 @@ public class AddProductServlet extends HttpServlet {
     
     private void addProduct(HttpServletRequest request) {
 
-         Distributor distributeur = Distributor.getInstance();
+        // Distributor distributeur = Distributor.getInstance();
+        Distributor distributeur = (Distributor)this.getServletContext().getAttribute("distributeur");
+        if(distributeur == null){
+            request.setAttribute("error", "data not availables");
+            // add error dispaly in jsp page ..: to do
+            return;
+        }
         String productId = request.getParameter("idProduct");
 
         if (productId == null || "".equals(productId)) {

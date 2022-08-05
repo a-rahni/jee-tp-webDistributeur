@@ -10,6 +10,9 @@
         <c:if test="${sessionScope.user != null}">
             <h4> email compte: <c:out value="${sessionScope.user.getEmail()}"/> </h4>
         </c:if>
+            <c:if test="${error != null}">
+                <h2 style="color: red"><c:out value="${error}"/> </h2>
+            </c:if>
         
         <table>
             <caption>Liste des produits</caption>
